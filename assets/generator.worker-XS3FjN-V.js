@@ -69,23 +69,57 @@ void main() {
 uniform float uScale;
 uniform float uOctaves;
 uniform float uContrast;
-uniform float uColorSpan;
+uniform float uWarpAmount;
+uniform float uLacunarity;
+
+// Layered value noise with configurable octaves/lacunarity, mirroring the CPU
+// generator so GPU output matches the CPU domain-warped look.
+float fbmN(vec2 p, int oct) {
+  float lac = max(1.0, uLacunarity);
+  float v = 0.0;
+  float a = 0.5;
+  for (int k = 0; k < 8; k++) {
+    if (k >= oct) break;
+    v += a * valueNoise(p);
+    p = p * lac + 11.7;
+    a *= 0.5;
+  }
+  return v;
+}
 
 void main() {
-  vec2 uv = fragCoord() / uResolution;
-  float n = fbm(uv * uScale * 6.0);
-  float t = n;
+  // Match the CPU generator's noise scale. CPU uses pixel-space p = px * scale
+  // with the scale normalised to 1080: p = px * (scale * 1080 / min(w,h)).
+  // Normalised uv (px/min * scale * 6) collapsed the whole frame into a single
+  // noise cell, producing a flat/blank image.
+  vec2 px = fragCoord();
+  float mn = min(uResolution.x, uResolution.y);
+  vec2 p0 = px * (uScale * 1080.0 / mn);
+  int oct = int(round(uOctaves));
+
+  // Domain warp, mirroring the CPU generator.
+  float qx = fbmN(p0, oct);
+  float qy = fbmN(p0 + vec2(5.2, 1.3), oct);
+  float rx = fbmN(p0 + uWarpAmount * qx + 1.7, oct);
+  float ry = fbmN(p0 + uWarpAmount * qx + 8.3, oct);
+  float val = fbmN(p0 + uWarpAmount * rx, oct);
+
+  float t = val * 0.5 + 0.5;
   t = 0.5 + (t - 0.5) * uContrast * 1.2;
   t = clamp(t, 0.0, 0.999);
-  fragColor = vec4(sampleColor((t * uColorSpan + 0.0) * 1.0), 1.0);
+  fragColor = vec4(sampleColor(t), 1.0);
 }
 `;case`topography`:return`
 uniform float uScale;
 uniform float uOctaves;
 
 void main() {
-  vec2 uv = fragCoord() / uResolution;
-  float n = fbm(uv * uScale * 6.0);
+  // Pixel-space scale matching the CPU generator: p = px * (scale * 1080 / min).
+  // (uv * uScale * 6 collapsed the frame into one noise cell → flat contours.)
+  vec2 px = fragCoord();
+  float mn = min(uResolution.x, uResolution.y);
+  vec2 p = px * (uScale * 1080.0 / mn);
+  float n = fbm(p);
   float band = fract(n * 12.0);
   float line = 1.0 - smoothstep(0.0, 0.15, band);
   float base = 0.12 + n * 0.4;
@@ -98,9 +132,11 @@ uniform float uScale;
 uniform float uOctaves;
 
 void main() {
-  vec2 uv = fragCoord() / uResolution;
+  // Pixel-space scale matching the CPU generator: p = px * (scale * 1080 / min).
+  vec2 px = fragCoord();
+  float mn = min(uResolution.x, uResolution.y);
+  vec2 p = px * (uScale * 1080.0 / mn);
   float veins = 0.0;
-  vec2 p = uv * uScale * 8.0;
   float a = 0.5;
   for (int k = 0; k < 6; k++) {
     veins += a * sin(valueNoise(p) * 6.2831 + p.x * 2.0 + p.y * 1.3);
@@ -338,4 +374,4 @@ float fbm(vec2 p) {
   }
   return v;
 }
-`+s);if(!c)return null;try{return re(t,c,n,r,i,a,o)}catch{return null}finally{t.deleteProgram(c)}}function Y(e,t,n){let r=ee(e,e.VERTEX_SHADER,t),i=ee(e,e.FRAGMENT_SHADER,n);if(!r||!i)return null;let a=e.createProgram();return e.attachShader(a,r),e.attachShader(a,i),e.linkProgram(a),e.getProgramParameter(a,e.LINK_STATUS)?a:null}function ee(e,t,n){let r=e.createShader(t);return e.shaderSource(r,n),e.compileShader(r),e.getShaderParameter(r,e.COMPILE_STATUS)?r:null}const X=new Set([`mode`,`power`,`maxIter`,`maxSteps`,`shape`]),te=[`mode`,`power`,`maxIter`,`zoom`,`cxOffset`,`cyOffset`,`cReal`,`cImag`,`scale`,`octaves`,`contrast`,`colorSpan`,`warpAmount`,`frequency`,`amplitude`,`detail`,`maxSteps`,`shape`,`waves`,`asymmetry`,`warp`,`colorShift`];function ne(e){return`u`+e.charAt(0).toUpperCase()+e.slice(1)}function re(e,t,n,r,i,a,o){let s=new Float32Array([-1,-1,3,-1,-1,3]),c=e.createBuffer();e.bindBuffer(e.ARRAY_BUFFER,c),e.bufferData(e.ARRAY_BUFFER,s,e.STATIC_DRAW);let l=e.getAttribLocation(t,`aPos`);if(l<0)return e.deleteBuffer(c),null;e.enableVertexAttribArray(l),e.vertexAttribPointer(l,2,e.FLOAT,!1,0,0);let u=e.createTexture();e.bindTexture(e.TEXTURE_2D,u),e.texImage2D(e.TEXTURE_2D,0,e.RGBA,n,r,0,e.RGBA,e.UNSIGNED_BYTE,null),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_MIN_FILTER,e.NEAREST),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_MAG_FILTER,e.NEAREST),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_WRAP_S,e.CLAMP_TO_EDGE),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_WRAP_T,e.CLAMP_TO_EDGE);let d=e.createFramebuffer();e.bindFramebuffer(e.FRAMEBUFFER,d),e.framebufferTexture2D(e.FRAMEBUFFER,e.COLOR_ATTACHMENT0,e.TEXTURE_2D,u,0),e.viewport(0,0,n,r),e.useProgram(t);let f=n=>e.getUniformLocation(t,n);e.uniform2f(f(`uResolution`),n,r),e.uniform1f(f(`uSeed`),o),e.uniform3f(f(`uBg`),i.bg[0]/255,i.bg[1]/255,i.bg[2]/255),e.uniform3f(f(`uBgLight`),i.bgLight[0]/255,i.bgLight[1]/255,i.bgLight[2]/255);for(let t=0;t<5;t++){let n=i.colors[t];e.uniform3f(f(`uColors[`+t+`]`),n[0]/255,n[1]/255,n[2]/255)}for(let t of te){if(a[t]===void 0)continue;let n=f(ne(t));if(n!=null){if(X.has(t)){let r=Math.round(Number(a[t]));e.uniform1i(n,r)}else typeof a[t]==`number`?e.uniform1f(n,a[t]):Array.isArray(a[t])&&a[t].length===2?e.uniform2f(n,a[t][0],a[t][1]):Array.isArray(a[t])&&a[t].length===3&&e.uniform3f(n,a[t][0],a[t][1],a[t][2])}}e.drawArrays(e.TRIANGLES,0,3);let p=new Uint8ClampedArray(n*r*4);return e.readPixels(0,0,n,r,e.RGBA,e.UNSIGNED_BYTE,p),e.bindFramebuffer(e.FRAMEBUFFER,null),e.deleteTexture(u),e.deleteFramebuffer(d),e.deleteBuffer(c),p}const Z=new Set(W.filter(e=>e.pixelRender).map(e=>e.id));let Q=0;self.onmessage=function(e){let{type:t}=e.data;if(t!==`generate`)return;e.data.jobId>Q&&(Q=e.data.jobId);let{generatorId:n,paletteId:r,width:i,height:a,seed:o,params:c,isDark:l,quality:u=`preview`,jobId:d}=e.data;if(!e.data.isExport&&d!==void 0&&d!==Q){self.postMessage({type:`skipped`,jobId:d});return}let f=U[n],p=s.find(e=>e.id===r);if(!f||!p){self.postMessage({type:`error`,message:`Unknown generator or palette`,jobId:d});return}try{let e=Z.has(n),t=u===`preview`&&e?.5:1,r=Math.round(i*t),s=Math.round(a*t),m=new OffscreenCanvas(r,s),h=performance.now(),g,_=!1,v=!1;if(q(n))try{let e=m.getContext(`webgl2`);if(e){let t=J(n,e,m.width,m.height,p,{...c,isDark:l},o);if(t){let e=new Uint8ClampedArray(m.width*m.height*4),n=m.width*4;for(let r=0;r<m.height;r++){let i=(m.height-1-r)*n,a=r*n;e.set(t.subarray(i,i+n),a)}g=new ImageData(e,m.width,m.height),v=!0}}}catch{g=void 0,v=!1}if(!g){let e=m.getContext(`2d`);f(e,m.width,m.height,p,o,{...c,isDark:l,quality:u}),g=e.getImageData(0,0,m.width,m.height)}if(t<1){let e=new OffscreenCanvas(g.width,g.height);e.getContext(`2d`).putImageData(g,0,0);let t=new OffscreenCanvas(i,a).getContext(`2d`);t.imageSmoothingEnabled=!0,t.imageSmoothingQuality=`high`,t.drawImage(e,0,0,i,a),g=t.getImageData(0,0,i,a),_=!0}let y=performance.now()-h;self.postMessage({type:`complete`,imageData:g,elapsed:y,width:g.width,height:g.height,upscaled:_,quality:u,gpu:v,jobId:d},[g.data.buffer])}catch(e){self.postMessage({type:`error`,message:e.message,jobId:d})}};
+`+s);if(!c)return null;try{return re(t,c,n,r,i,a,o)}catch{return null}finally{t.deleteProgram(c)}}function Y(e,t,n){let r=ee(e,e.VERTEX_SHADER,t),i=ee(e,e.FRAGMENT_SHADER,n);if(!r||!i)return null;let a=e.createProgram();return e.attachShader(a,r),e.attachShader(a,i),e.linkProgram(a),e.getProgramParameter(a,e.LINK_STATUS)?a:null}function ee(e,t,n){let r=e.createShader(t);return e.shaderSource(r,n),e.compileShader(r),e.getShaderParameter(r,e.COMPILE_STATUS)?r:null}const X=new Set([`mode`,`power`,`maxIter`,`maxSteps`,`shape`]),te=[`mode`,`power`,`maxIter`,`zoom`,`cxOffset`,`cyOffset`,`cReal`,`cImag`,`scale`,`octaves`,`contrast`,`colorSpan`,`warpAmount`,`lacunarity`,`frequency`,`amplitude`,`detail`,`maxSteps`,`shape`,`waves`,`asymmetry`,`warp`,`colorShift`];function ne(e){return`u`+e.charAt(0).toUpperCase()+e.slice(1)}function re(e,t,n,r,i,a,o){let s=new Float32Array([-1,-1,3,-1,-1,3]),c=e.createBuffer();e.bindBuffer(e.ARRAY_BUFFER,c),e.bufferData(e.ARRAY_BUFFER,s,e.STATIC_DRAW);let l=e.getAttribLocation(t,`aPos`);if(l<0)return e.deleteBuffer(c),null;e.enableVertexAttribArray(l),e.vertexAttribPointer(l,2,e.FLOAT,!1,0,0);let u=e.createTexture();e.bindTexture(e.TEXTURE_2D,u),e.texImage2D(e.TEXTURE_2D,0,e.RGBA,n,r,0,e.RGBA,e.UNSIGNED_BYTE,null),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_MIN_FILTER,e.NEAREST),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_MAG_FILTER,e.NEAREST),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_WRAP_S,e.CLAMP_TO_EDGE),e.texParameteri(e.TEXTURE_2D,e.TEXTURE_WRAP_T,e.CLAMP_TO_EDGE);let d=e.createFramebuffer();e.bindFramebuffer(e.FRAMEBUFFER,d),e.framebufferTexture2D(e.FRAMEBUFFER,e.COLOR_ATTACHMENT0,e.TEXTURE_2D,u,0),e.viewport(0,0,n,r),e.useProgram(t);let f=n=>e.getUniformLocation(t,n);e.uniform2f(f(`uResolution`),n,r),e.uniform1f(f(`uSeed`),o),e.uniform3f(f(`uBg`),i.bg[0]/255,i.bg[1]/255,i.bg[2]/255),e.uniform3f(f(`uBgLight`),i.bgLight[0]/255,i.bgLight[1]/255,i.bgLight[2]/255);for(let t=0;t<5;t++){let n=i.colors[t];e.uniform3f(f(`uColors[`+t+`]`),n[0]/255,n[1]/255,n[2]/255)}for(let t of te){if(a[t]===void 0)continue;let n=f(ne(t));if(n!=null){if(X.has(t)){let r=Math.round(Number(a[t]));e.uniform1i(n,r)}else typeof a[t]==`number`?e.uniform1f(n,a[t]):Array.isArray(a[t])&&a[t].length===2?e.uniform2f(n,a[t][0],a[t][1]):Array.isArray(a[t])&&a[t].length===3&&e.uniform3f(n,a[t][0],a[t][1],a[t][2])}}e.drawArrays(e.TRIANGLES,0,3);let p=new Uint8ClampedArray(n*r*4);return e.readPixels(0,0,n,r,e.RGBA,e.UNSIGNED_BYTE,p),e.bindFramebuffer(e.FRAMEBUFFER,null),e.deleteTexture(u),e.deleteFramebuffer(d),e.deleteBuffer(c),p}const Z=new Set(W.filter(e=>e.pixelRender).map(e=>e.id));let Q=0;self.onmessage=function(e){let{type:t}=e.data;if(t!==`generate`)return;e.data.jobId>Q&&(Q=e.data.jobId);let{generatorId:n,paletteId:r,width:i,height:a,seed:o,params:c,isDark:l,quality:u=`preview`,jobId:d}=e.data;if(!e.data.isExport&&d!==void 0&&d!==Q){self.postMessage({type:`skipped`,jobId:d});return}let f=U[n],p=s.find(e=>e.id===r);if(!f||!p){self.postMessage({type:`error`,message:`Unknown generator or palette`,jobId:d});return}try{let e=Z.has(n),t=u===`preview`&&e?.5:1,r=Math.round(i*t),s=Math.round(a*t),m=new OffscreenCanvas(r,s),h=performance.now(),g,_=!1,v=!1;if(q(n))try{let e=m.getContext(`webgl2`);if(e){let t=J(n,e,m.width,m.height,p,{...c,isDark:l},o);if(t){let e=new Uint8ClampedArray(m.width*m.height*4),n=m.width*4;for(let r=0;r<m.height;r++){let i=(m.height-1-r)*n,a=r*n;e.set(t.subarray(i,i+n),a)}g=new ImageData(e,m.width,m.height),v=!0}}}catch{g=void 0,v=!1}if(!g){let e=m.getContext(`2d`);f(e,m.width,m.height,p,o,{...c,isDark:l,quality:u}),g=e.getImageData(0,0,m.width,m.height)}if(t<1){let e=new OffscreenCanvas(g.width,g.height);e.getContext(`2d`).putImageData(g,0,0);let t=new OffscreenCanvas(i,a).getContext(`2d`);t.imageSmoothingEnabled=!0,t.imageSmoothingQuality=`high`,t.drawImage(e,0,0,i,a),g=t.getImageData(0,0,i,a),_=!0}let y=performance.now()-h;self.postMessage({type:`complete`,imageData:g,elapsed:y,width:g.width,height:g.height,upscaled:_,quality:u,gpu:v,jobId:d},[g.data.buffer])}catch(e){self.postMessage({type:`error`,message:e.message,jobId:d})}};
