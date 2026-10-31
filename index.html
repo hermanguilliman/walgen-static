@@ -1,76 +1,252 @@
 <!doctype html>
-<html lang="en" data-theme="dark">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>WalGen — Abstract Wallpaper Generator</title>
-    <meta name="theme-color" content="#000000" />
-    <meta name="color-scheme" content="dark" />
+<html lang="ru" data-theme="dark">
 
-    <!-- SEO -->
-    <meta name="description" content="Generate unique abstract wallpapers from procedural algorithms. Free, no signup, runs entirely in your browser." />
-    <meta name="keywords" content="wallpaper generator, abstract wallpaper, generative art, procedural art, svelte, canvas, wallpaper" />
-    <meta name="author" content="WalGen" />
-    <meta name="robots" content="index, follow" />
-    <meta name="yandex-verification" content="51133ed144e8f7d1" />
-    <link rel="canonical" href="https://walgen.guilliman.ru/" />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>WalGen — онлайн-генератор абстрактных обоев и фонов по формулам (ПК, iPhone, Android, 4K)</title>
+  <meta name="theme-color" content="#000000" />
+  <meta name="color-scheme" content="dark" />
 
-    <!-- Icons -->
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
-    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-    <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
-    <link rel="shortcut icon" href="/favicon.ico" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
-    <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#D71921" />
-    <link rel="manifest" href="/site.webmanifest" />
+  <!-- SEO -->
+  <meta name="description"
+    content="Бесплатный процедурный генератор уникальных абстрактных обоев и математических фонов прямо в браузере (Full HD, 4K). Create unique abstract wallpapers from procedural algorithms." />
+  <meta name="keywords"
+    content="генератор обоев онлайн, абстрактные обои 4k, создать обои на рабочий стол, генератор фонов, математические обои, procedural wallpaper generator, abstract wallpaper, generative art, walgen.guilliman.ru" />
+  <meta name="author" content="Herman Guilliman" />
+  <meta name="robots" content="index, follow" />
+  <meta name="yandex-verification" content="51133ed144e8f7d1" />
+  <link rel="canonical" href="https://walgen.guilliman.ru/" />
 
-    <!-- Windows / IE -->
-    <meta name="msapplication-TileColor" content="#000000" />
-    <meta name="msapplication-TileImage" content="/mstile-150x150.png" />
-    <meta name="msapplication-config" content="/browserconfig.xml" />
+  <!-- Icons -->
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png" />
+  <link rel="shortcut icon" href="/favicon.ico" />
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#D71921" />
+  <link rel="manifest" href="/site.webmanifest" />
 
-    <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:site_name" content="WalGen" />
-    <meta property="og:title" content="WalGen — Abstract Wallpaper Generator" />
-    <meta property="og:description" content="Generate unique abstract wallpapers with procedural algorithms — free, in your browser, no signup." />
-    <meta property="og:url" content="https://walgen.guilliman.ru/" />
-    <meta property="og:image" content="https://walgen.guilliman.ru/og-image.png" />
-    <meta property="og:image:width" content="1200" />
-    <meta property="og:image:height" content="630" />
-    <meta property="og:image:alt" content="WalGen abstract wallpaper generator" />
-    <meta property="og:locale" content="en_US" />
+  <!-- Windows / IE -->
+  <meta name="msapplication-TileColor" content="#000000" />
+  <meta name="msapplication-TileImage" content="/mstile-150x150.png" />
+  <meta name="msapplication-config" content="/browserconfig.xml" />
 
-    <!-- Twitter / X Card -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="WalGen — Abstract Wallpaper Generator" />
-    <meta name="twitter:description" content="Generate unique abstract wallpapers with procedural algorithms — free, in your browser, no signup." />
-    <meta name="twitter:image" content="https://walgen.guilliman.ru/og-image.png" />
-    <meta name="twitter:image:alt" content="WalGen abstract wallpaper generator" />
+  <!-- Open Graph -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="WalGen" />
+  <meta property="og:title" content="WalGen — онлайн-генератор абстрактных обоев по формулам" />
+  <meta property="og:description"
+    content="Создавайте уникальные процедурные и абстрактные обои в высоком разрешении прямо в браузере — бесплатно и без регистрации." />
+  <meta property="og:url" content="https://walgen.guilliman.ru/" />
+  <meta property="og:image" content="https://walgen.guilliman.ru/og-image.png" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:image:alt" content="WalGen — генератор абстрактных обоев" />
+  <meta property="og:locale" content="ru_RU" />
+  <meta property="og:locale:alternate" content="en_US" />
 
-    <!-- Structured data -->
-    <script type="application/ld+json">
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="WalGen — онлайн-генератор абстрактных обоев по формулам" />
+  <meta name="twitter:description"
+    content="Создавайте уникальные процедурные обои в высоком разрешении прямо в браузере — бесплатно." />
+  <meta name="twitter:image" content="https://walgen.guilliman.ru/og-image.png" />
+  <meta name="twitter:image:alt" content="WalGen abstract wallpaper generator" />
+
+  <!-- Structured data -->
+  <script type="application/ld+json">
     {
       "@context": "https://schema.org",
-      "@type": "WebSite",
+      "@type": "WebApplication",
       "name": "WalGen",
-      "alternateName": "WalGen Abstract Wallpaper Generator",
+      "alternateName": "WalGen — генератор абстрактных обоев по формулам",
       "url": "https://walgen.guilliman.ru/",
-      "description": "Generate unique abstract wallpapers with procedural algorithms — free, in your browser, no signup.",
-      "inLanguage": ["en", "ru"],
-      "applicationCategory": "UtilitiesApplication",
-      "operatingSystem": "Any"
+      "description": "Бесплатный онлайн-генератор уникальных абстрактных обоев и фонов на основе процедурных математических алгоритмов.",
+      "inLanguage": ["ru", "en"],
+      "applicationCategory": "DesignApplication",
+      "operatingSystem": "All",
+      "isPartOf": {
+        "@type": "WebSite",
+        "name": "Guilliman's Lab",
+        "url": "https://guilliman.ru/"
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "RUB"
+      }
     }
-    </script>
+  </script>
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet" />
-    <script type="module" crossorigin src="/assets/index-XACmDHNb.js"></script>
-    <link rel="stylesheet" crossorigin href="/assets/index-YH7jsdSf.css">
-  <script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
-  <body>
-    <div id="app"></div>
-  </body>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Doto:wght@400..900&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap"
+    rel="stylesheet" />
+
+  <!-- Yandex.RTB -->
+  <script>window.yaContextCb = window.yaContextCb || []</script>
+  <script src="https://yandex.ru/ads/system/context.js" async></script>
+  <script type="module" crossorigin src="/assets/index-DH-PFSZl.js"></script>
+  <link rel="stylesheet" crossorigin href="/assets/index-zdTVRrnU.css">
+<script id="vite-plugin-pwa:register-sw" src="/registerSW.js"></script></head>
+
+<body>
+  <!-- Yandex.Metrika counter -->
+  <script type="text/javascript">
+      (function (m, e, t, r, i, k, a) {
+        m[i] = m[i] || function () { (m[i].a = m[i].a || []).push(arguments) };
+        m[i].l = 1 * new Date();
+        for (var j = 0; j < document.scripts.length; j++) { if (document.scripts[j].src === r) { return; } }
+        k = e.createElement(t), a = e.getElementsByTagName(t)[0], k.async = 1, k.src = r, a.parentNode.insertBefore(k, a)
+      })(window, document, 'script', 'https://mc.yandex.ru/metrika/tag.js?id=113961570', 'ym');
+
+    ym(113961570, 'init', { ssr: true, webvisor: true, clickmap: true, ecommerce: "dataLayer", referrer: document.referrer, url: location.href, accurateTrackBounce: true, trackLinks: true });
+  </script>
+  <noscript>
+    <div><img src="https://mc.yandex.ru/watch/113961570" style="position:absolute; left:-9999px;" alt="" /></div>
+  </noscript>
+  <!-- /Yandex.Metrika counter -->
+
+  <!-- Главный заголовок для поисковиков и скринридеров -->
+  <h1 class="sr-only">WalGen — процедурный онлайн-генератор абстрактных обоев и фонов по формулам</h1>
+
+  <div id="app"></div>
+
+  <!-- Компактная плавающая кнопка открытия всех проектов Guilliman's Lab -->
+  <button type="button" class="hub-fab" id="hubBtn" aria-label="Все проекты Guilliman's Lab"
+    title="Все проекты Guilliman's Lab">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+      stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <rect x="3" y="3" width="7" height="7" rx="1"></rect>
+      <rect x="14" y="3" width="7" height="7" rx="1"></rect>
+      <rect x="14" y="14" width="7" height="7" rx="1"></rect>
+      <rect x="3" y="14" width="7" height="7" rx="1"></rect>
+    </svg>
+    <span>Проекты</span>
+  </button>
+
+  <!-- Модальное окно: Все проекты Guilliman's Lab + РСЯ + SEO-описание -->
+  <dialog class="hub-dialog" id="hubDialog" aria-labelledby="hubDialogTitle">
+    <div class="hub-dialog__head">
+      <span class="hub-dialog__title" id="hubDialogTitle">Guilliman's Lab — Все проекты и о сервисе</span>
+      <button type="button" class="hub-dialog__close" id="hubCloseBtn" aria-label="Закрыть">✕</button>
+    </div>
+    <div class="hub-dialog__body">
+      <nav aria-label="Проекты Guilliman's Lab">
+        <div class="hub-grid-links">
+          <a class="hub-link-card" href="https://guilliman.ru/" target="_blank" rel="noopener">
+            <b>guilliman.ru <span>↗</span></b>
+            <span>Центральный хаб всех проектов и утилит</span>
+          </a>
+          <a class="hub-link-card" href="https://blog.guilliman.ru/" target="_blank" rel="noopener">
+            <b>blog.guilliman.ru <span>↗</span></b>
+            <span>Блог — статьи, заметки и публикации</span>
+          </a>
+          <a class="hub-link-card" href="https://radio.guilliman.ru/" target="_blank" rel="noopener">
+            <b>radio.guilliman.ru <span>↗</span></b>
+            <span>Онлайн-радио и генератор плейлистов M3U8</span>
+          </a>
+          <a class="hub-link-card" href="https://input.guilliman.ru/" target="_blank" rel="noopener">
+            <b>input.guilliman.ru <span>↗</span></b>
+            <span>Диагностика мыши, клавиатуры и периферии</span>
+          </a>
+          <a class="hub-link-card" href="https://stl.guilliman.ru/" target="_blank" rel="noopener">
+            <b>stl.guilliman.ru <span>↗</span></b>
+            <span>Онлайн 3D-просмотрщик STL-моделей</span>
+          </a>
+          <a class="hub-link-card" href="https://password.guilliman.ru/" target="_blank" rel="noopener">
+            <b>password.guilliman.ru <span>↗</span></b>
+            <span>Генератор криптостойких паролей</span>
+          </a>
+          <a class="hub-link-card" href="https://md.guilliman.ru/" target="_blank" rel="noopener">
+            <b>md.guilliman.ru <span>↗</span></b>
+            <span>Быстрый конвертер HTML в Markdown</span>
+          </a>
+          <a class="hub-link-card" href="https://keytag.guilliman.ru/" target="_blank" rel="noopener">
+            <b>keytag.guilliman.ru <span>↗</span></b>
+            <span>Редактор и печать бирок для ключей</span>
+          </a>
+          <a class="hub-link-card" href="https://tartan.guilliman.ru/" target="_blank" rel="noopener">
+            <b>tartan.guilliman.ru <span>↗</span></b>
+            <span>Генератор шотландских клетчатых узоров</span>
+          </a>
+        </div>
+      </nav>
+
+      <!-- Yandex.RTB R-A-20314452-1 -->
+      <div id="yandex_rtb_R-A-20314452-1"></div>
+
+      <section class="hub-seo-text" aria-label="О процедурном генераторе обоев WalGen">
+        <h2>WalGen — процедурный онлайн-генератор абстрактных обоев и математических фонов</h2>
+        <p>
+          <strong>WalGen (walgen.guilliman.ru)</strong> — бесплатный генератор уникальных абстрактных обоев, паттернов
+          и цифрового генеративного искусства (Generative Art) прямо в браузере. Изображения синтезируются на холсте
+          HTML5 Canvas с помощью процедурных математических алгоритмов и формул без использования нейросетей и серверной
+          обработки.
+        </p>
+        <p>
+          Настраивайте цветовые палитры, параметры шума, геометрии и градиентов и скачивайте готовые обои без потери
+          качества для мониторов ПК (Full HD, 2K QHD, 4K UHD, Ultrawide), ноутбуков и экранов смартфонов iPhone и
+          Android.
+        </p>
+      </section>
+    </div>
+  </dialog>
+
+
+  <!-- Логика встраивания кнопки в шапку Svelte и открытия окна проектов -->
+  <script>
+    (function () {
+      const btn = document.getElementById('hubBtn');
+      const dlg = document.getElementById('hubDialog');
+      const closeBtn = document.getElementById('hubCloseBtn');
+      let adRendered = false;
+
+      // Автоматически переносим кнопку внутрь шапки Svelte, чтобы она стояла в ряду с родными кнопками
+      function mountIntoHeader() {
+        const header = document.querySelector('#app header');
+        if (!header || !btn || header.contains(btn)) return false;
+        // Если в шапке есть правый блок с кнопками — вставляем туда, иначе в сам header
+        const actions = header.querySelector(':scope > div:last-child, :scope > nav:last-child');
+        if (actions && actions !== header.firstElementChild) {
+          actions.prepend(btn);
+        } else {
+          header.appendChild(btn);
+        }
+        return true;
+      }
+
+      if (!mountIntoHeader()) {
+        const obs = new MutationObserver(() => {
+          if (mountIntoHeader()) obs.disconnect();
+        });
+        const appRoot = document.getElementById('app');
+        if (appRoot) obs.observe(appRoot, { childList: true, subtree: true });
+      }
+
+      if (btn && dlg) {
+        btn.addEventListener('click', () => {
+          dlg.showModal();
+          if (!adRendered) {
+            adRendered = true;
+            window.yaContextCb.push(() => {
+              Ya.Context.AdvManager.render({
+                "blockId": "R-A-20314452-1",
+                "renderTo": "yandex_rtb_R-A-20314452-1"
+              });
+            });
+          }
+        });
+        closeBtn?.addEventListener('click', () => dlg.close());
+        dlg.addEventListener('click', (e) => {
+          if (e.target === dlg) dlg.close();
+        });
+      }
+    })();
+  </script>
+</body>
+
 </html>
